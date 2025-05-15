@@ -57,10 +57,39 @@
 
     async function getGameIcons(universeIds) {
       const ids = universeIds.join(",");
-      const res = aw
+      const res = await fetch(`https://thumbnails.roblox.com/v1/games/icons?universeIds=${ids}&size=512x512&format=Png&isCircular=false`);
+      const data = await res.json();
+      return Object.fromEntries(data.data.map(i => [i.targetId, i.imageUrl]));
+    }
 
+    async function loadGames() {
+      const games = await getGames(groupId);
+      const universeIds = games.map(g => g.id);
+      const icons = await getGameIcons(universeIds);
+
+      const container = document.getElementById("games");
+      if (games.length === 0) {
+        container.innerHTML = "<p>No games found for this group.</p>";
+        return;
+      }
+
+      games.forEach(game => {
+        const div = document.createElement("div");
+        div.className = "game";
+        div.innerHTML = `
+          <img src="${icons[game.id] || ''}" alt="Game Icon">
+          <div class="info">
+            <h3><a href="https://www.roblox.com/games/${game.rootPlaceId}" target="_blank">${game.name}</a></h3>
+            <p>👥 Players: ${game.playing}</p>
+            <p>🗓️ Created: ${new Date(game.created).toLocaleDateString()}</p>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
 
     loadGames();
   </script>
 </body>
 </html>
+
