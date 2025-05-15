@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Roblox Developer Games</title>
+  <title>Games by what. Development</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
       background: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
     }
     .game {
       display: flex;
@@ -33,59 +36,29 @@
     .info p {
       margin: 5px 0;
     }
+    a {
+      text-decoration: none;
+      color: #007bff;
+    }
   </style>
 </head>
 <body>
-  <h1>Games by Developer: <span id="devName">what.</span></h1>
+  <h1>Games by what. Development (Group ID: 33670373)</h1>
   <div id="games"></div>
 
   <script>
-    const username = "what.";
+    const groupId = 33670373;
 
-    async function getUserId(username) {
-      const res = await fetch("https://users.roblox.com/v1/usernames/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usernames: [username] })
-      });
-      const data = await res.json();
-      return data.data[0]?.id;
-    }
-
-    async function getGames(userId) {
-      const res = await fetch(`https://games.roblox.com/v2/users/${userId}/games?sortOrder=Asc&limit=50`);
+    async function getGames(groupId) {
+      const res = await fetch(`https://games.roblox.com/v2/groups/${groupId}/games?sortOrder=Asc&limit=50`);
       const data = await res.json();
       return data.data;
     }
 
     async function getGameIcons(universeIds) {
       const ids = universeIds.join(",");
-      const res = await fetch(`https://thumbnails.roblox.com/v1/games/icons?universeIds=${ids}&size=512x512&format=Png&isCircular=false`);
-      const data = await res.json();
-      return Object.fromEntries(data.data.map(i => [i.targetId, i.imageUrl]));
-    }
+      const res = aw
 
-    async function loadGames() {
-      const userId = await getUserId(username);
-      const games = await getGames(userId);
-      const universeIds = games.map(g => g.id);
-      const icons = await getGameIcons(universeIds);
-
-      const container = document.getElementById("games");
-      games.forEach(game => {
-        const div = document.createElement("div");
-        div.className = "game";
-        div.innerHTML = `
-          <img src="${icons[game.id] || ''}" alt="Game Icon">
-          <div class="info">
-            <h3><a href="https://www.roblox.com/games/${game.rootPlaceId}" target="_blank">${game.name}</a></h3>
-            <p>👥 Players: ${game.playing}</p>
-            <p>🗓️ Created: ${new Date(game.created).toLocaleDateString()}</p>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
 
     loadGames();
   </script>
